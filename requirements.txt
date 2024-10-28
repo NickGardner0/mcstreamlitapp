@@ -1,0 +1,9 @@
+### requirements
+
+matplotlib 
+plotly 
+pandas 
+numpy 
+random 
+pickle
+streamlit 
