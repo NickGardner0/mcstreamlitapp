@@ -11,7 +11,7 @@ def gen_number():
     st.session_state["ran"] = rnd.randint(1,10000)
     return
 
-st.set_page_config(page_title="Monte Carlo Pi", page_icon='🔢',layout="wide")
+st.set_page_config(page_title="Monte Carlo Pi", page_icon=':m:',layout="wide")
 
 if "intro" not in st.session_state:
     st.session_state["intro"] = False
@@ -23,43 +23,55 @@ if "ran" not in st.session_state:
 col1,col2,col3 = st.columns([1,2,1])
 
 with col2:
-    st.title("Using Monte Carlo to Estimate Pi")
-    st.write("""Monte Carlo simulations are very useful in a wide variety \
-    of fields. That's because they give us a way to predict outcomes that would otherwise be \
-    impossible (translation: hard enough not to bother :rolling_on_the_floor_laughing:) because \
-    of random chance!
-    Some examples of every day uses include:""")
+    st.title("Using Monte Carlo to Estimate π values ")
+    st.write("""Monte Carlo simulations (MCS) are a class of computational algorithms that rely \
+             on random sampling to solve complex mathematical and probabilistic problems. \
+             They are especially useful when dealing with systems that have a high degree of \
+             uncertainty, non-linearity, or many interdependent variables. 
+             
+             These algorithms have application across many fields, but are most useful in: """)
 
 # create 2 columns so we can add text on one side and a gif on the other
 # Space out the maps so the first one is 2x the size of the second
 col1, col2,col3,col4 = st.columns((1,1,1,1))
 #column 1
 with col2:
-    st.write("""
-**Finance and Business:** they can be used to evaluate risk in different options the business \
-is looking at, such as investments
+    st.write(""" 
+**Risk Analysis and Uncertainty:** MCS helps model the range of possible outcomes in uncertain situations by running multiple iterations with different sets of random inputs. \
+             It provides probability distributions for outcomes instead of single-point estimates.
 
-**Search and Rescue:** US coast guard uses it to predict likely locations of \
-vessels in need of assistance
 
-**Design and Visuals:** such as video games and producing 3D photo-realistic \
-    models and pictures
+**Optimization Problems:** Monte Carlo methods are used to find the best solution among many possibilities, \
+             especially in high-dimensional optimization where deterministic approaches are impractical. 
 
-**Climate Change:** the Intergovernmental Panel on Climate Change uses it \
-    to help in the calculation of energy absorbed in the atmosphere due to greenhouse gasses
 
-Click here if you want to know more about [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method)""")
-    st.write('[Wiki for the image](https://en.wikipedia.org/wiki/Kinetic_theory_of_gases)')
+**Probability Calculations:** In cases where it is difficult to compute exact probabilities analytically, such as in finance or physics, \
+             Monte Carlo simulations can estimate probabilities through repeated random sampling.
 
-# column 2: a gif
+**Model Validation and Forecasting:** MCS is used to validate complex models by simulating various inputs and comparing the predicted outcomes against real-world data. \
+      It is also used for forecasting future states under uncertain conditions. """)
+    
+
+
+# column 3: multiple GIFs with alignment and reduced spacing
 with col3:
-    # streamlit share launches from a directory above so need to account for this in the file path
-    st.image('MC_pi/Translational_motion.gif', caption='Brownian motion is random!')
-    #if running locally use the line below for the image
-    #st.image('Translational_motion.gif', caption='Brownian motion is random!')
+    # Move the first GIF slightly to the right
+    st.markdown("<div style='text-align: center; margin-left: 30px; margin-bottom: -10px;'>", unsafe_allow_html=True)
+    st.image('MC_pi/brownian2_motion.gif', caption='Stochastic', width=300)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Keep the second GIF in the same spot
+    st.markdown("<div style='text-align: center; margin-top: -20px;'>", unsafe_allow_html=True)
+    st.image('MC_pi/Pi_30K.gif', caption='π-variance', width=370)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+
+
+
+
 
 with col2:
-    st.subheader("*Lets get going!*")
+    st.subheader("*Lets run some sims*")
 
     if st.button("Open simulation", key='start_'):
         st.session_state.intro = True
@@ -71,9 +83,9 @@ if st.session_state['intro']:
     ### Create sidebar
     with st.sidebar:
 
-        st.title("Simulation Parameter")
-        st.markdown("This is where you select the total number of randomly generated \
-        points you want to use to estimate what Pi is:")
+        st.title("Parameters")
+        st.markdown("Select the total number of randomly generated \
+        points you want to use to estimate π values:")
         iterations = st.number_input("Total Number of Points:", min_value=1,max_value= 10000, value=st.session_state["ran"])
         st.button("Random number", on_click=gen_number)
 
@@ -81,19 +93,14 @@ if st.session_state['intro']:
 
     with col1:
         # section 2 running a MC simulation
-        st.header('Run Your First Monte Carlo Simulation! :sunglasses:')
+        st.header('Run a simple MC algorithm')
         st.write("""
-From the sidebar type a number in the field (or use the plus/minus button) for \
-the total number of points you want to use to estimate Pi!
+Enter a value in the sidebar to set the total number of points used to estimate π \
 
-The idea behind this simulation \
-[yes your a computational person now! :star-struck:] is that the ratio of area of the circle \
-to the area outside the circle but inside the square (those corner bits) has a ratio that happens to be Pi. \
-It's not a coincidence! Someone *discovered* this ratio and found it to be \
-**SO useful** that we decided to give it a special name and symbol!
+This simulation leverages the ratio of the areas: the fraction of randomly placed points falling inside a unit circle (radius = 1) relative to those inside the enclosing square (side length = 2) \
+converges to π. This relationship is the foundation for using Monte Carlo methods to approximate π efficiently. \
+The plot visualizes the random points with a circle and square overlay, illustrating the probabilistic nature of the estimation. """)
 
-This graph shows all the points overlayed with a circle of radius = 1 and \
-a square with sides of length = 2.""")
 
     # use the total number of points to generate pairs of x and y points for our graph
     x_list = []
@@ -145,21 +152,13 @@ a square with sides of length = 2.""")
     # actually going to add a new point to the graph for every new estimation of \pi
     col3, col4 = st.columns(2)
     with col3:
-        st.header("How the Total Number of Points Affects Pi :hash:")
+        st.header("Impact of Point Count on π Estimation")
         st.write("""
-One really cool thing about Monte Carlo is as you increase \
-the total number of points you use in your simulation, the more accurate your results. \
-This actually relies on a basic principle of statistics called 'The Law of Large Numbers' \
-([you can learn more about it in the first 2 minutes of this video](https://www.youtube.com/watch?v=MntX3zWNWec)).
+As the number of points in a Monte Carlo simulation increases, the Pi estimate becomes more accurate. \
+This behavior is explained by the Law of Large Numbers, which states that as the sample size grows, the average of results converges to the expected value. \
+The graph illustrates this convergence: early estimates vary widely, especially with small sample sizes (e.g., 10 or 100 points). \
+As the number of points increases, the spread of values narrows, stabilizing around the true value of π (marked by the red line). With large point counts (1,000 or more), individual variations become negligible. """) 
 
-In practice this means that a graph like this one, that tracks your calculated Pi value, \
-against the total number of points you used in it's estimation, will show less spread \
-as the total number of points increases. In math/statistics we call this convergence.
-
-In this case the number we converge on is the true value of Pi (I have added it as a \
-red horizantal line on the graph). Notice how spread out the estimations are \
-at low orders of magnitude (small numbers such as 1, 10 or 100) and how at large \
-estimations (1000 or more) you can barely distinguish individual points!""")
 
         x_log = st.checkbox("log Number of Points", key="graph_1")
 
@@ -206,17 +205,13 @@ estimations (1000 or more) you can barely distinguish individual points!""")
     col5,col6 = st.columns(2)
 
     with col5:
-        st.header('Keeping Track of Each New Estimate of Pi :pie:')
+        st.header('Tracking Progress of π Estimates')
         st.write("""
-This graph tracks the number of times you have estimated Pi and adds a \
-point on the graph each time you try a different "Total Number of Points"! \
-What is cool to see here is that the colour of the point depends on the total number of points.
+This graph plots each new π estimate based on the number of points used in each trial.\
+ The color of each point corresponds to the total points used, highlighting how higher point counts yield estimates closer to π. \
+As point counts increase by orders of magnitude (e.g., 1–9 vs. 5000 points), the spread of estimates decreases. \
+Lower point counts show greater variability, while larger samples converge near the true value of π (shown by the red line). """) 
 
-You can really see the difference in how spread out the estimates are \
-as you increase by an order of magnitude (i.e. when only using 1-9 points versus using 5000).
-
-Notice how the pink numbers are all clustered near the true value of Pi (the red line), and as you decrease the \
-number of points used to estimate, the points are spread over a larger and larger range of values!""")
 
         color = st.radio("Color points by:", ["Number of Points", "% Error"])
         range = st.slider("Range of Pi values:",0.0,4.0,[0.0,4.0],0.5)
@@ -248,26 +243,17 @@ number of points used to estimate, the points are spread over a larger and large
     col7,col8 = st.columns(2)
 
     with col7:
-        st.header('% Error as Iterations Change :chart_with_downwards_trend:')
+        st.header('% Error Across Iterations')
 
         st.write("""
-A great way to visually show how extreme the change in error is as you increase \
-the number of points used in your simulation, is to plot each % Error as a function of \
-the number of points!
+This plot shows how % error decreases as the number of points used increases. At low point counts (e.g., <5 points), \
+the error can reach 100%, but it quickly drops to just a few percent with around 100 points. \
+To analyze the error distribution more effectively, you can apply a logarithmic scale to the axes. \
+This highlights the order of magnitude changes in both % error and point count, making trends more visible at different scales. """) 
 
-The change in the error is *extreme* at the low \
-end of the number of points (bottom right). It's actaully so extreme that it jumps from errors \
-of 100% (yikes thats high!) at 5 points and under to an averge of only a few percent around 100 \
-points. To better see the spread in the points you can log the axes of both the y-axis \
-(the % error) and the x-axis (the number of points).""")
 
         # add checkboxes to sidebar to make the axes log!
-        st.markdown("""
-##### % Error Graph Parameters
-To see the details of the error graph you can log one or both axes \
-of the graph. This will display the order of magnitude (the number of 0's before or after \
-the decmal point) of the percent error and total number of points.""")
-
+    
         x_log = st.checkbox("log Number of Points")
         y_log = st.checkbox("log % Error")
 
@@ -283,28 +269,3 @@ the decmal point) of the percent error and total number of points.""")
 
     #repickle file with added data
     converge.to_pickle('pkled_data.pkl')
-
-    # math section
-    st.header("Show me the Math! :heart:  :nerd_face:")
-    math = st.expander('click to see the math behind the estimation')
-
-    with math:
-        st.write('The area of a circle and a square are as shown. In this case the length\
-        of the square is 2 times the radius of the circle or 2r:')
-
-        st.latex(r'''A_{circle} = \pi r^2''')
-        st.latex(r'''A_{square} = 2l = 2(2r) = 4r''')
-
-        st.write("The trick here is that the ratio of the areas of the circle and square \
-        can be related to the number of random points that fall inside the circle and \
-        square respectively")
-
-        st.latex(r'''\frac{A_{circle}}{A_{square}} = \frac{\text{points in circle}}{\text{total points}} ''')
-
-        st.write("this becomes....")
-
-        st.latex(r'''\frac{A_{circle}}{A_{square}} = \frac{\pi r^{\cancel{2}}}{4\cancel{r}}
-        = \frac{\pi r}{4}''')
-
-        st.latex(r''' \frac{\pi r}{4} = \frac{\text{points in circle}}{\text{total points}} ''')
-        st.latex(r''' \pi = \frac{4}{r}\frac{\text{points in circle}}{\text{total points}} ''')
